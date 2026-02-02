@@ -17,15 +17,15 @@ outdir = args.output_dir
 base = url.split("/map/")[0]
 r = requests.get(url)
 
-new_umap = False
+new_umap = True
 
 if "new Umap" in r.text :
     new_umap = True
-    regexp = re.compile(r'U.MAP = new Umap."map",(.+}\))', re.DOTALL)
-else :
-    regexp = re.compile(r'U.MAP = new U.Map[(]"map", (.+) }\)', re.DOTALL)
 
-data = json.loads(regexp.findall(r.text, re.DOTALL)[0].replace("})","}"))
+text = re.sub("&quot;", '"',r.text)
+properties_string = re.search(r'data-settings="(.*)"\>\<\/script\>', text).group(1)
+
+data = json.loads(properties_string)	
 
 properties = data["properties"]
 layers = properties["datalayers"]
